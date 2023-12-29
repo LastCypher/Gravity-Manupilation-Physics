@@ -9,6 +9,9 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody rb;
     [SerializeField] CameraFollow camFollow;
     public Vector3 jumpDirection;
+    private Vector3 moveDirection;
+
+    public Animator animator;
 
     // Define the gravity direction
     enum Directions
@@ -26,7 +29,7 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
 
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-
+        jumpDirection = new Vector3( 0, 9.81f, 0);
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -38,15 +41,24 @@ public class PlayerMovement : MonoBehaviour
         Jump();
         isGrounded = IsGrounded();
         HandleGravityManipulation();
+        animator.SetBool("IsFalling", !isGrounded);
+        animator.SetBool("IsRunning", moveDirection.magnitude > 0.1f);
     }
-
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.tag == "Box")
+        {
+            TimerController.instance.CollectCube();
+            Destroy(other.gameObject);
+        }
+    }
     void MovePlayer()
     {
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
         // Adjust the move direction based on the current gravity direction
-        Vector3 moveDirection = camFollow.transform.forward * vertical + camFollow.transform.right * horizontal;
+        moveDirection = camFollow.transform.forward * vertical + camFollow.transform.right * horizontal;
 
         Vector3 moveVelocity = moveDirection * moveSpeed;
 

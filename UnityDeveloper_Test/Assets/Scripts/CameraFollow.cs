@@ -21,7 +21,7 @@ public class CameraFollow : MonoBehaviour
 
         currentY = Mathf.Clamp(currentY, YMin, YMax);
 
-        Quaternion rotation = Quaternion.Euler(currentX, currentY, currentZ);
+        Quaternion rotation = Quaternion.Euler(-currentY, currentX, currentZ);
 
         Vector3 direction = rotation * new Vector3(0, 0, -distance);
         Vector3 desiredPosition = lookAt.position + direction;
